@@ -11,7 +11,6 @@ public class GameManager : MonoBehaviour
     public event EventHandler OnGamePaused;
     public event EventHandler OnGameUnpaused;
 
-
     private enum States {
         WaitingToStart,
         CountdownToStart,
@@ -20,9 +19,10 @@ public class GameManager : MonoBehaviour
     }
 
     private States state;
-    private float countdownToStartTimer = 3f;
+    private float countdownToStartTimer = 1f;
     private float gamePlayingTimer;
-    [SerializeField] private float gamePlayingTimerMax = 30f;
+    [SerializeField] private float gamePlayingTimerMax = 300f;
+    [SerializeField] private bool isCountdownEnabled = false;
     private bool isGamePaused = false;
 
     private void Awake() {
@@ -33,6 +33,11 @@ public class GameManager : MonoBehaviour
     private void Start() {
         GameInput.Instance.OnPauseAction += GameInput_OnPauseAction;
         GameInput.Instance.OnInteractAction += GameInput_OnInteractionAction;
+        gamePlayingTimer = gamePlayingTimerMax;
+
+        // DEBUG TRIGGER GAME START AUTOMATICALLY
+        state = States.CountdownToStart;
+        OnStateChanges?.Invoke(this, EventArgs.Empty);
     }
 
     private void GameInput_OnInteractionAction(object sender, EventArgs e) {
@@ -59,7 +64,9 @@ public class GameManager : MonoBehaviour
                 }
                 break;
             case States.GamePlaying:
-                gamePlayingTimer -= Time.deltaTime;
+                if (isCountdownEnabled) {
+                    gamePlayingTimer -= Time.deltaTime;
+                }
                 if (gamePlayingTimer < 0f) {
                     state = States.GameOver;
                     OnStateChanges?.Invoke(this, EventArgs.Empty);

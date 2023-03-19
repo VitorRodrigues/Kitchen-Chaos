@@ -1,7 +1,8 @@
 ﻿using System;
+using Unity.Netcode;
 using UnityEngine;
 
-public abstract class BaseCounter: MonoBehaviour, IKitchenObjectParent
+public abstract class BaseCounter: NetworkBehaviour, IKitchenObjectParent
 {
     [SerializeField] private Transform counterTopPoint;
     public static event EventHandler OnAnyObjectPlacedHere;
@@ -41,4 +42,7 @@ public abstract class BaseCounter: MonoBehaviour, IKitchenObjectParent
         }
     }
 
+    public NetworkObject GetNetworkObject() {
+        return NetworkObject;
+    }
 }
